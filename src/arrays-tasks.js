@@ -21,9 +21,7 @@
  *    getIntervalArray(3, 3) => [ 3 ]
  */
 function getIntervalArray(start, end) {
-  return Array(end - start + 1)
-    .fill()
-    .map((_, index) => start + index);
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
 }
 
 /**
@@ -62,17 +60,7 @@ function sumArrays(arr1, arr2) {
  *    findElement([0, 1, 2, 3, 4, 5], 5) => 5
  */
 function findElement(arr, value) {
-  function search(index) {
-    if (index === arr.length) {
-      return -1;
-    }
-    if (arr[index] === value) {
-      return index;
-    }
-    return search(index + 1);
-  }
-
-  return search(0);
+  return arr.indexOf(value);
 }
 
 /**
@@ -531,20 +519,20 @@ function findCommonElements(arr1, arr2) {
 function findLongestIncreasingSubsequence(nums) {
   if (nums.length === 0) return 0;
 
-  const dp = new Array(nums.length).fill(1);
-  nums.reduce((acc, _, i) => {
-    dp[i] = Math.max(
-      ...nums.slice(0, i).map((_, j) => {
-        if (nums[i] > nums[j]) {
-          return dp[j] + 1;
-        }
-        return dp[i];
-      })
-    );
-    return dp;
-  }, []);
+  let maxLen = 1;
+  let currentLen = 1;
 
-  return Math.max(...dp);
+  nums.reduce((prev, curr) => {
+    if (curr > prev) {
+      currentLen += 1;
+      maxLen = Math.max(maxLen, currentLen);
+    } else {
+      currentLen = 1;
+    }
+    return curr;
+  });
+
+  return maxLen;
 }
 
 /**
@@ -580,11 +568,9 @@ function propagateItemsByPositionIndex(arr) {
  */
 function shiftArray(arr, n) {
   const len = arr.length;
-  const normalizedN = n % len;
-  if (normalizedN < 0) {
-    return [...arr.slice(-normalizedN), ...arr.slice(0, len + normalizedN)];
-  }
-  return [...arr.slice(normalizedN), ...arr.slice(0, normalizedN)];
+  if (len === 0) return arr;
+  const normalizedN = ((n % len) + len) % len;
+  return [...arr.slice(-normalizedN), ...arr.slice(0, len - normalizedN)];
 }
 
 /**
@@ -600,8 +586,23 @@ function shiftArray(arr, n) {
  *   sortDigitNamesByNumericOrder([ 'nine','eight','nine','eight' ]) => [ 'eight','eight','nine','nine']
  *   sortDigitNamesByNumericOrder([ 'one','one','one','zero' ]) => [ 'zero','one','one','one' ]
  */
-function sortDigitNamesByNumericOrder(/* arr */) {
-  throw new Error('Not implemented');
+function sortDigitNamesByNumericOrder(arr) {
+  const digitOrder = [
+    'zero',
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+  ];
+
+  return arr
+    .slice()
+    .sort((a, b) => digitOrder.indexOf(a) - digitOrder.indexOf(b));
 }
 
 /**
